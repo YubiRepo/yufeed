@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yufeed | Premium News Crawler</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <i data-lucide="rss"></i>
+            <span>YUFEED</span>
+        </div>
+
+        <nav class="nav-section">
+            <h3 class="nav-title">App</h3>
+            <div class="source-item active" onclick="showTab('feed')">
+                <i data-lucide="newspaper" size="18"></i>
+                <span>News Feed</span>
+            </div>
+            <div class="source-item" onclick="showTab('sources')">
+                <i data-lucide="settings" size="18"></i>
+                <span>Manage Sources</span>
+            </div>
+            <div class="source-item" onclick="showTab('docs')">
+                <i data-lucide="book" size="18"></i>
+                <span>API Docs</span>
+            </div>
+        </nav>
+
+        <nav class="nav-section">
+            <h3 class="nav-title">Crawler Sources</h3>
+            <div class="sidebar-search">
+                <input type="text" id="source-search" placeholder="Search sources..." oninput="filterSources()">
+                <i data-lucide="search" size="14"></i>
+            </div>
+            <div id="source-list">
+                <!-- Sources will be injected here -->
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <header class="header">
+            <div class="header-left">
+                <h1 id="active-source-title">All Sources</h1>
+                <p id="active-source-desc" style="color: var(--muted-foreground); font-size: 0.875rem;">Live Feed from news crawlers</p>
+            </div>
+            <div class="header-right" id="header-actions">
+                <!-- Category selector or manage actions -->
+            </div>
+        </header>
+
+        <!-- News Feed Tab -->
+        <div id="tab-feed" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p class="stat-label">Total Articles</p>
+                    <p class="stat-value" id="stat-total">0</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Active Sources</p>
+                    <p class="stat-value" id="stat-sources-count">0 / 0</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">System</p>
+                    <p class="stat-value status-pulse" style="color: #10b981;">Online</p>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="article-grid" id="article-grid">
+                    <!-- Articles will be injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Sources Tab -->
+        <div id="tab-sources" class="tab-content" style="display: none;">
+            <div class="content-area">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2>Sources Inventory</h2>
+                    <button class="btn btn-primary" onclick="openSourceModal()">
+                        <i data-lucide="plus" size="16"></i> Add New Source
+                    </button>
+                </div>
+                
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <table class="table" id="sources-table">
+                        <thead>
+                            <tr>
+                                <th>Source Name</th>
+                                <th>ID</th>
+                                <th>Base URL</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sources-tbody">
+                            <!-- Sources injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Documentation Tab -->
+        <div id="tab-docs" class="tab-content" style="display: none;">
+            <div class="content-area" style="max-width: 800px;">
+                <h2 style="margin-bottom: 8px;">Developer Documentation</h2>
+                <p style="color: var(--muted-foreground); margin-bottom: 32px;">Integration guide for FeedID News Crawler API.</p>
+                
+                <div class="card" style="margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 12px;">Fetch Articles</h3>
+                    <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-bottom: 12px;">Get latest articles from a specific source and category.</p>
+                    <code style="display: block; background: var(--muted); padding: 12px; border-radius: 4px; font-size: 0.875rem;">GET /api/news/:source/:category?fetchDetail=true</code>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 12px;">Interactive Swagger</h3>
+                    <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-bottom: 16px;">Test endpoints and explore full schema using our interactive documentation.</p>
+                    <a href="/api-docs" target="_blank" class="btn btn-outline">Open Swagger UI <i data-lucide="external-link" size="14"></i></a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Source Management Modal -->
+    <div class="modal-overlay" id="source-modal-overlay">
+        <div class="modal-content">
+            <div class="close-btn" onclick="closeSourceModal()"><i data-lucide="x"></i></div>
+            <h2 id="source-modal-title" style="margin-bottom: 8px;">Add New Source</h2>
+            <p style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 24px;">Configure how FeedID should crawl this news site.</p>
+            
+            <form id="source-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 6px;">Internal ID</label>
+                        <input type="text" id="src-id" placeholder="e.g. cnn" class="input">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 6px;">Display Name</label>
+                        <input type="text" id="src-name" placeholder="e.g. CNN Indonesia" class="input">
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 6px;">RSS Base URL</label>
+                    <input type="text" id="src-url" placeholder="https://www.cnnindonesia.com/rss" class="input">
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 24px;">
+                    <!-- Categories Section -->
+                    <div class="form-group-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                            <label style="font-size: 0.875rem; font-weight: 600; color: var(--foreground);">Categories Configuration</label>
+                            <button type="button" class="btn btn-outline" style="height: 28px; padding: 0 12px; font-size: 0.75rem;" onclick="addRow('categories')">+ Add Category</button>
+                        </div>
+                        <div id="categories-container" style="display: grid; gap: 10px;">
+                            <!-- Key-Value rows for categories -->
+                        </div>
+                    </div>
+
+                    <!-- Selectors Section -->
+                    <div class="form-group-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                            <label style="font-size: 0.875rem; font-weight: 600; color: var(--foreground);">Content Selectors</label>
+                            <button type="button" class="btn btn-outline" style="height: 28px; padding: 0 12px; font-size: 0.75rem;" onclick="addRow('selectors')">+ Add Selector</button>
+                        </div>
+                        <div id="selectors-container" style="display: grid; gap: 10px;">
+                            <!-- Key-Value rows for selectors -->
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border); padding-top: 24px;">
+                    <button type="button" class="btn btn-outline" onclick="closeSourceModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Configuration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Article Detail Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="close-btn" id="close-modal"><i data-lucide="x"></i></div>
+            <div class="modal-header">
+                <div class="modal-tags" id="modal-tags"></div>
+                <h2 id="modal-title" style="font-size: 1.75rem; margin-bottom: 12px; line-height: 1.2;"></h2>
+                <p id="modal-meta" style="color: var(--muted-foreground); font-size: 0.875rem;"></p>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+                <a id="modal-link" href="#" target="_blank" class="btn btn-outline">
+                    Read Original Article <i data-lucide="external-link" size="14"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="script.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
