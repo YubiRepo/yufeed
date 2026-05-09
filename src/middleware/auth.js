@@ -15,15 +15,40 @@ const requireAdmin = (req, res, next) => {
 // Hybrid: Check API Key OR Admin Session
 const requireCredential = async (req, res, next) => {
     const apiKey = req.headers['x-api-key'] || req.query.apiKey;
+    const startTime = Date.now();
     
     // 1. Admin Session bypass
     if (req.session.userId && req.session.role === 'admin') return next();
 
     // 2. API Key Check
     if (apiKey) {
-        const user = await db.getUserByApiKey(apiKey);
+        let keyRecord = await db.getApiKeyByKey(apiKey);
+        let user;
+
+        if (keyRecord) {
+            user = await db.getUserById(keyRecord.user_id);
+            req.apiKeyId = keyRecord.id;
+        } else {
+            // Fallback to legacy single key in users table
+            user = await db.getUserByApiKey(apiKey);
+        }
+
         if (user) {
             req.user = user;
+            
+            // Log analytics after response is sent
+            res.on('finish', () => {
+                if (req.apiKeyId) {
+                    db.logApiRequest(
+                        req.apiKeyId,
+                        req.originalUrl,
+                        req.method,
+                        res.statusCode,
+                        Date.now() - startTime,
+                        req.ip
+                    ).catch(err => console.error('Logging error:', err));
+                }
+            });
             return next();
         }
     }

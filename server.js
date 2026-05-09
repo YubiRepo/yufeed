@@ -12,6 +12,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Basic Middlewares
+app.use((req, res, next) => {
+    res.setHeader('Content-Security-Policy', "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';");
+    res.removeHeader('X-Content-Security-Policy');
+    res.removeHeader('X-WebKit-CSP');
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'frontend/dist')));
@@ -53,7 +60,7 @@ app.use('/api', apiRoutes);
 
 // SPA Fallback
 app.use((req, res, next) => {
-    if (req.path.startsWith('/api/')) return next();
+    if (req.path.startsWith('/api/') || req.path.startsWith('/api-docs')) return next();
     res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
 });
 
