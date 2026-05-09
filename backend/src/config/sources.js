@@ -241,5 +241,54 @@ module.exports = {
       author: 'a[class*="ReporterInfo_name"]',
       tags: '[class*="TopicFollowButton_btn-text"]'
     }
+  },
+  yonhap: {
+    name: 'Yonhap News',
+    baseUrl: 'https://en.yna.co.kr/RSS/',
+    categories: {
+      terbaru: 'news.xml',
+      top: 'topnews.xml',
+      politik: 'politics.xml',
+      ekonomi: 'economy.xml',
+      olahraga: 'sports.xml',
+      hiburan: 'entertainment.xml',
+      lifestyle: 'culture.xml',
+      north_korea: 'northkorea.xml'
+    },
+    selectors: {
+      content: 'article.story-news',
+      author: 'p.p_writer',
+      tags: '.kwd-lst a'
+    }
+  },
+  koreaHerald: {
+    name: 'The Korea Herald',
+    baseUrl: 'https://www.koreaherald.com/rss/',
+    categories: {
+      terbaru: 'newsAll',
+      nasional: '0201010000',
+      bisnis: '0201020000',
+      lifestyle: '0201030000',
+      hiburan: '0201040000',
+      olahraga: '0201050000',
+      dunia: '0201060000'
+    },
+    selectors: {
+      content: '#articleBody',
+      author: 'em.editor_name, .view_editors .name',
+      tags: '.view_tag a'
+    }
+  },
+  kcna: {
+    name: 'KCNA Watch',
+    baseUrl: 'https://kcnawatch.org/',
+    categories: {
+      terbaru: 'feed/'
+    },
+    selectors: {
+      content: '.col-lg-9',
+      author: '',
+      tags: ''
+    }
   }
 };

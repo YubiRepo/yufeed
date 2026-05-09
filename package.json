@@ -1,42 +1,14 @@
 {
-  "name": "feedid",
-  "version": "2.0.1",
-  "description": "Parser RSS Situs Berita Indonesia",
-  "main": "./src/index.js",
-  "scripts": {},
-  "author": "Renova Muhamad Reza",
-  "license": "MIT",
-  "dependencies": {
-    "@mozilla/readability": "^0.6.0",
-    "axios": "^1.16.0",
-    "better-sqlite3": "^12.9.0",
-    "cheerio": "^1.2.0",
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "jsdom": "^29.1.1",
-    "mysql2": "^3.22.3",
-    "sqlite3": "^6.0.1",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
-    "xml2js": "^0.6.2"
+  "name": "yufeed",
+  "version": "2.5.0",
+  "description": "Premium News Intelligence & Aggregator Platform",
+  "scripts": {
+    "start": "cd backend && node server.js",
+    "dev:backend": "cd backend && nodemon server.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
   },
-  "devDependencies": {
-    "nodemon": "^2.0.12"
-  },
-  "keywords": [
-    "rss",
-    "berita",
-    "indonesia",
-    "rss-json",
-    "berita-indonesia",
-    "rss-reader"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/renomureza/feedid.git"
-  },
-  "bugs": {
-    "url": "https://github.com/renomureza/feedid/issues"
-  },
-  "homepage": "https://github.com/renomureza/feedid"
+  "author": "Yufeed Team",
+  "license": "MIT"
 }
