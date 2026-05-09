@@ -1,11 +1,14 @@
 import React from 'react';
 import { Rss, LayoutDashboard, Database, Terminal, ShieldCheck, User, LogOut, Sun, Moon, Search, Menu } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar({ 
-  user, activeTab, setActiveTab, sources, currentSource, setCurrentSource, 
+  user, activeTab, sources, currentSource, 
   setSidebarOpen, sidebarOpen, handleLogout, theme, toggleTheme 
 }) {
+  const navigate = useNavigate();
+
   return (
     <aside className={cn(
       "fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-card text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-white/5 transition-all duration-300 lg:relative lg:translate-x-0",
@@ -31,14 +34,14 @@ export default function Sidebar({
           <div className="space-y-1">
             <p className="px-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-3">Core Engine</p>
             {[
-              { id: 'feed', icon: LayoutDashboard, label: 'Feed Explorer' },
-              ...(user.role === 'admin' ? [{ id: 'sources', icon: Database, label: 'Source Management' }] : []),
-              { id: 'docs', icon: Terminal, label: 'API Reference' },
-              { id: 'keys', icon: ShieldCheck, label: 'Access Keys' },
+              { id: 'feed', icon: LayoutDashboard, label: 'Feed Explorer', path: '/feed' },
+              ...(user.role === 'admin' ? [{ id: 'sources', icon: Database, label: 'Source Management', path: '/sources' }] : []),
+              { id: 'docs', icon: Terminal, label: 'API Reference', path: '/docs' },
+              { id: 'keys', icon: ShieldCheck, label: 'Access Keys', path: '/keys' },
             ].map(item => (
               <div 
                 key={item.id}
-                onClick={() => { setActiveTab(item.id); setSidebarOpen(false); }}
+                onClick={() => { navigate(item.path); setSidebarOpen(false); }}
                 className={cn(
                   "flex items-center gap-3 px-3 py-3 rounded-2xl cursor-pointer text-xs font-black transition-all group uppercase tracking-widest",
                   activeTab === item.id 
@@ -61,7 +64,7 @@ export default function Sidebar({
               {Object.entries(sources).map(([id, src]) => (
                 <div 
                   key={id}
-                  onClick={() => { setCurrentSource(id); setActiveTab('feed'); setSidebarOpen(false); }}
+                  onClick={() => { navigate(`/feed/${id}`); setSidebarOpen(false); }}
                   className={cn(
                     "flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-[12px] font-bold transition-all group",
                     currentSource === id && activeTab === 'feed' 

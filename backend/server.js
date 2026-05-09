@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 });
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'frontend/dist')));
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 // Session Configuration
 const FileStore = require('session-file-store')(session);
@@ -61,7 +61,7 @@ app.use('/api', apiRoutes);
 // SPA Fallback
 app.use((req, res, next) => {
     if (req.path.startsWith('/api/') || req.path.startsWith('/api-docs')) return next();
-    res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
+    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
 });
 
 // Bootstrap Server
