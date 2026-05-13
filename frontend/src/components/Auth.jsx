@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Rss, Eye, EyeOff, Lock, User, ArrowRight, AlertCircle, ShieldCheck, Sun, Moon } from 'lucide-react';
 import { cn } from '../lib/utils';
 
-export default function Auth({ authView, onLogin, error, theme }) {
+export default function Auth({ authView = 'login', onLogin, error, theme }) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

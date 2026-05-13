@@ -50,10 +50,26 @@ const swaggerOptions = {
         security: [{ ApiKeyAuth: [] }],
         servers: [{ url: `http://localhost:${PORT}` }],
     },
-    apis: ['./src/routes/api.js'], // Pointing to the new route file
+    apis: ['./src/routes/api.js'],
 };
+
+const customCss = `
+  .swagger-ui .topbar { display: none }
+  .swagger-ui .info { margin: 30px 0 }
+  .swagger-ui .info .title { font-family: 'Inter', sans-serif; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: -0.02em; }
+  .swagger-ui .scheme-container { background: transparent; box-shadow: none; border-bottom: 1px solid #e2e8f0; padding: 20px 0; }
+  .swagger-ui .opblock { border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0 !important; overflow: hidden; }
+  .swagger-ui .opblock.opblock-post { background: #f8fafc; border-color: #3b82f6 !important; }
+  .swagger-ui .opblock.opblock-get { background: #f8fafc; border-color: #10b981 !important; }
+  .swagger-ui .opblock .opblock-summary { padding: 12px 20px; }
+  .swagger-ui .opblock .opblock-summary-method { border-radius: 8px; font-weight: 900; text-transform: uppercase; }
+  .swagger-ui .btn.authorize { background-color: #3b82f6; border-color: #3b82f6; color: white; border-radius: 10px; font-weight: 900; text-transform: uppercase; }
+  .swagger-ui .btn.authorize svg { fill: white; }
+  body { background-color: #ffffff !important; }
+`;
+
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, { customCss, customSiteTitle: "Yufeed API Reference" }));
 
 // API Routes
 app.use('/api', apiRoutes);

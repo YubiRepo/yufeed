@@ -1,23 +1,30 @@
 
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  Menu, X, Activity, Terminal, ShieldCheck, 
-  Plus, Edit3, Trash2, Globe, Calendar, ArrowLeft, ExternalLink,
-  Code, LogOut, CheckCircle, AlertCircle, Clock, Database,
-  LayoutDashboard, User, Rss, Search, Lock
+import {
+  Activity,
+  AlertCircle,
+  CheckCircle,
+  Lock,
+  Menu,
+  Plus,
+  Search,
+  Terminal,
+  Trash2,
+  X
 } from 'lucide-react';
-import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from './lib/utils';
 
-import Sidebar from './components/Sidebar';
 import ArticleCard from './components/ArticleCard';
 import ArticleDetail from './components/ArticleDetail';
+import Sidebar from './components/Sidebar';
 import SourceEditorForm from './components/SourceForm';
 import SourcesInventory from './components/SourcesInventory';
 
 
 import Auth from './components/Auth';
+import ApiReference from './components/ApiReference';
 
 function Dialog({ isOpen, title, message, onConfirm, onCancel, type = 'danger' }) {
   if (!isOpen) return null;
@@ -34,13 +41,13 @@ function Dialog({ isOpen, title, message, onConfirm, onCancel, type = 'danger' }
           <h3 className="text-lg font-black text-foreground uppercase tracking-tight">{title}</h3>
           <p className="text-xs text-muted-foreground font-medium leading-relaxed uppercase tracking-wider">{message}</p>
           <div className="flex gap-3 pt-6">
-            <button 
+            <button
               onClick={onCancel}
               className="flex-1 h-12 rounded-xl border border-border font-black text-[10px] uppercase tracking-widest hover:bg-muted transition-all"
             >
               Cancel
             </button>
-            <button 
+            <button
               onClick={onConfirm}
               className={cn(
                 "flex-1 h-12 rounded-xl font-black text-[10px] uppercase tracking-widest text-white shadow-lg transition-all hover:-translate-y-0.5",
@@ -67,7 +74,7 @@ function InputDialog({ isOpen, title, placeholder, value, onChange, onConfirm, o
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Provide the necessary label or identification</p>
           </div>
           <div className="space-y-2">
-            <input 
+            <input
               autoFocus
               value={value}
               onChange={e => onChange(e.target.value)}
@@ -76,13 +83,13 @@ function InputDialog({ isOpen, title, placeholder, value, onChange, onConfirm, o
             />
           </div>
           <div className="flex gap-4 pt-4">
-            <button 
+            <button
               onClick={onCancel}
               className="flex-1 h-14 rounded-2xl border border-border font-black text-[11px] uppercase tracking-widest hover:bg-muted transition-all text-muted-foreground hover:text-foreground"
             >
               Cancel
             </button>
-            <button 
+            <button
               onClick={onConfirm}
               className="flex-[2] h-14 rounded-2xl bg-primary text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary/20 hover:opacity-95 hover:-translate-y-0.5 transition-all"
             >
@@ -135,7 +142,7 @@ export default function App() {
       if (urlSource) setCurrentSource(urlSource);
       if (urlCategory) setCurrentCategory(urlCategory);
       else setCurrentCategory('');
-      
+
       if (!articleUrl) setSelectedArticle(null);
     } else {
       setSelectedArticle(null);
@@ -157,15 +164,15 @@ export default function App() {
 
   useEffect(() => {
     if (user) {
-        loadConfig();
-        if (activeTab === 'sources' && user.role === 'admin') fetchSourcesTable();
-        if (activeTab === 'keys') fetchApiKeys();
+      loadConfig();
+      if (activeTab === 'sources' && user.role === 'admin') fetchSourcesTable();
+      if (activeTab === 'keys') fetchApiKeys();
     }
   }, [user, activeTab]);
 
   useEffect(() => {
     if (user && activeTab === 'feed' && currentSource) {
-        fetchNews(currentSource, currentCategory);
+      fetchNews(currentSource, currentCategory);
     }
   }, [currentSource, currentCategory, activeTab]);
 
@@ -216,7 +223,7 @@ export default function App() {
       const res = await api.get('/api/config');
       setSources(res.data);
       if (activeTab === 'feed' && !urlSource && Object.keys(res.data).length > 0) {
-          navigate(`/feed/${Object.keys(res.data)[0]}`, { replace: true });
+        navigate(`/feed/${Object.keys(res.data)[0]}`, { replace: true });
       }
     } catch (e) {
       addToast('Failed to load system config', 'error');
@@ -368,15 +375,15 @@ export default function App() {
 
 
   if (authLoading) return <div className="h-screen flex items-center justify-center bg-background"><Activity className="w-8 h-8 text-primary animate-spin" /></div>;
-  if (!user) return <Auth onLogin={handleLogin} theme={theme} />;
+  if (!user) return <Auth authView="login" onLogin={handleLogin} theme={theme} />;
 
   return (
     <div className="flex h-screen bg-background overflow-hidden font-sans antialiased">
-      <Sidebar 
-        user={user} 
-        activeTab={activeTab} 
-        sources={sources} 
-        currentSource={currentSource} 
+      <Sidebar
+        user={user}
+        activeTab={activeTab}
+        sources={sources}
+        currentSource={currentSource}
         setSidebarOpen={setSidebarOpen}
         sidebarOpen={sidebarOpen}
         handleLogout={handleLogout}
@@ -407,13 +414,13 @@ export default function App() {
             {activeTab === 'feed' && (
               <nav className="hidden xl:flex items-center gap-1.5">
                 {sources[currentSource]?.categories && Object.keys(sources[currentSource].categories).map(cat => (
-                  <button 
+                  <button
                     key={cat}
                     onClick={() => navigate(`/feed/${currentSource}/${cat}`)}
                     className={cn(
                       "px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                      currentCategory === cat 
-                        ? "bg-foreground text-background shadow-xl" 
+                      currentCategory === cat
+                        ? "bg-foreground text-background shadow-xl"
                         : "text-muted-foreground hover:text-foreground hover:bg-accent"
                     )}
                   >
@@ -427,13 +434,13 @@ export default function App() {
           <div className="flex items-center gap-4">
             <div className="relative group hidden md:block">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-              <input 
-                type="text" 
-                placeholder="Search intelligence..." 
+              <input
+                type="text"
+                placeholder="Search intelligence..."
                 className="bg-accent border border-border rounded-2xl pl-12 pr-4 py-2.5 text-xs font-bold w-64 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/50 transition-all text-foreground placeholder:text-muted-foreground"
               />
             </div>
-            <button 
+            <button
               onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-3 hover:bg-accent rounded-2xl text-foreground"
             >
@@ -471,12 +478,12 @@ export default function App() {
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 animate-in fade-in duration-700">
                         {articles.map((item, idx) => (
-                          <ArticleCard 
-                            key={idx} 
+                          <ArticleCard
+                            key={idx}
                             idx={idx}
-                            article={item} 
-                            sourceName={sources[currentSource]?.name} 
-                            onClick={() => handleSelectArticle(item)} 
+                            article={item}
+                            sourceName={sources[currentSource]?.name}
+                            onClick={() => handleSelectArticle(item)}
                           />
                         ))}
                       </div>
@@ -484,23 +491,23 @@ export default function App() {
                   </div>
                 </div>
               ) : (
-                <ArticleDetail 
-                  article={selectedArticle} 
-                  sourceName={sources[currentSource]?.name} 
+                <ArticleDetail
+                  article={selectedArticle}
+                  sourceName={sources[currentSource]?.name}
                   onBack={() => {
                     const searchParams = new URLSearchParams(location.search);
                     searchParams.delete('article');
                     navigate({ search: searchParams.toString() });
                     setSelectedArticle(null);
-                  }} 
+                  }}
                   loading={detailLoading}
                 />
               )
             } />
             <Route path="/sources" element={
               user.role === 'admin' ? (
-                <SourcesInventory 
-                  sourcesList={sourcesList} 
+                <SourcesInventory
+                  sourcesList={sourcesList}
                   onAdd={() => navigate('/sources/add')}
                   onEdit={(src) => navigate(`/sources/edit/${src.id}`)}
                   onDelete={handleDeleteSource}
@@ -530,7 +537,7 @@ export default function App() {
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Manage credentials & real-time hit analytics</p>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => {
                         setInputModal({
                           isOpen: true,
@@ -538,7 +545,7 @@ export default function App() {
                           placeholder: 'Key label (e.g. Mobile App)',
                           value: '',
                           onChange: (val) => setInputModal(prev => ({ ...prev, value: val })),
-                          onConfirm: () => {},
+                          onConfirm: () => { },
                           onCancel: () => setInputModal(prev => ({ ...prev, isOpen: false }))
                         });
                       }}
@@ -624,27 +631,11 @@ export default function App() {
                 </div>
               </div>
             } />
-            <Route path="/docs" element={
-              <div className="flex-1 overflow-y-auto p-12 custom-scrollbar bg-background">
-                <div className="max-w-4xl mx-auto space-y-12">
-                  <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary border border-primary/20"><Terminal className="w-8 h-8" /></div>
-                    <div>
-                      <h2 className="text-4xl font-black tracking-tight text-foreground uppercase">API Documentation</h2>
-                      <p className="text-muted-foreground font-medium text-lg">Programmatic access and endpoint references</p>
-                    </div>
-                  </div>
-                  <div className="p-12 border border-dashed border-border rounded-[3rem] text-center space-y-4">
-                    <p className="text-muted-foreground font-black text-xs uppercase tracking-[0.3em]">Documentation Module Active</p>
-                    <p className="text-sm font-medium text-muted-foreground max-w-sm mx-auto">Refer to the system API_DOCS.md for complete schema definitions and integration patterns.</p>
-                  </div>
-                </div>
-              </div>
-            } />
+            <Route path="/docs" element={<ApiReference theme={theme} />} />
           </Routes>
         </div>
       </main>
-      
+
       {/* Toasts */}
       <div className="fixed bottom-8 right-8 z-[200] flex flex-col gap-3">
         {toasts.map(t => (
@@ -666,20 +657,20 @@ export default function App() {
         ))}
       </div>
 
-      <Dialog 
-        {...dialog} 
-        onCancel={() => setDialog(prev => ({ ...prev, isOpen: false }))} 
+      <Dialog
+        {...dialog}
+        onCancel={() => setDialog(prev => ({ ...prev, isOpen: false }))}
       />
-      
-      <InputDialog 
-        {...inputModal} 
+
+      <InputDialog
+        {...inputModal}
         onConfirm={() => {
           if (inputModal.value) {
             handleCreateKey(inputModal.value);
             setInputModal(prev => ({ ...prev, isOpen: false }));
           }
         }}
-        onCancel={() => setInputModal(prev => ({ ...prev, isOpen: false }))} 
+        onCancel={() => setInputModal(prev => ({ ...prev, isOpen: false }))}
       />
 
     </div>
